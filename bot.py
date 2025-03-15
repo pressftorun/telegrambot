@@ -1,21 +1,13 @@
 from cfg import token
 import telebot
+from buttons import button1, button2, button3,button4,button5,button6
 from telebot import types
 bot = telebot.TeleBot(token)
 
 @bot.message_handler(commands = ['start'])
 def handle_start(message):
-
   # Создание клавиатуры
   keyboard = types.ReplyKeyboardMarkup(row_width=3)
-  button1 = types.KeyboardButton('Сегодня')
-  button2 = types.KeyboardButton('Завтра')
-  button3 = types.KeyboardButton('Вчера')
-  button4 = types.KeyboardButton('/start')
-  button5 = types.KeyboardButton('blank')
-  button6 = types.KeyboardButton('/help')
-  
-
   keyboard.add(button1, button2, button3,button4,button5,button6)
   # Отправка сообщения с клавиатурой
   bot.reply_to(message, 'Привет! Прокликай кнопки.', reply_markup=keyboard)
