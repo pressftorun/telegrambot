@@ -1,18 +1,15 @@
-from cfg import token
+from cfg import token#импорт кода других папок и модулей
 import telebot,sqlite3
 from sqlite3 import Error
 from sqlite import addnote,giveinf
 from buttons import button1, button2, button3,button4,button5,button6,button7,button8,button9
 from telebot import types
-bot = telebot.TeleBot(token)
-markup=types.InlineKeyboardMarkup()
-@bot.message_handler(commands = ['start'])
+bot = telebot.TeleBot(token)#токен бота,ВАЖНО!
+@bot.message_handler(commands = ['start'])#команда старт(по коду, то что после собаки-условие, вызывающее функцию под ним)
 def handle_start(message):
-  # Создание клавиатуры
-  keyboard = types.ReplyKeyboardMarkup(row_width=3)
+  keyboard = types.ReplyKeyboardMarkup(row_width=3)#тип клавы, ширина
   keyboard.add(button1, button2, button3,button4,button5,button6,button7,button8,button9)
-  # Отправка сообщения с клавиатурой
-  bot.reply_to(message, 'Привет! Прокликай кнопки.', reply_markup=keyboard)
+  bot.reply_to(message, 'Привет! Прокликай кнопки.', reply_markup=keyboard)#непосредственно добавляет клаву
 
 @bot.message_handler(commands = ['help'])
 def helpfunc(message):
@@ -20,13 +17,13 @@ def helpfunc(message):
 
 @bot.message_handler(commands = ['checktasks'])
 def helpfunc(message):
-    giveinf(message)
+    giveinf(message)#тут у нас отсылка сообщений в файле sqlite, костыль
 
 @bot.message_handler(commands = ['addtask'])
 def helpfunc(message):
     bot.send_message(message.chat.id, 'Введите задание')
-    bot.register_next_step_handler(message,addnote)
-    
+    bot.register_next_step_handler(message,addnote)#тут у нас отсылка сообщения в файле sqlite, потом ответ отттуда же(костыль)
+#принимает сообщения на постоянке, если нет обращения к командам типа /...(СТАВИТЬ В САМЫЙ НИЗ)
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
     if message.text.lower()=='сегодня':
@@ -38,4 +35,4 @@ def handle_message(message):
     else:
         bot.reply_to(message, 'Чет не то ты написал...')
 
-bot.polling(none_stop = True)
+bot.polling(none_stop = True)#цикл работы бота(чтоб не отключался(он отключится после 5 минут афк где-то))

@@ -1,4 +1,4 @@
-import telebot
+import telebot#кнопки тут чтоб не захламлять основной файл
 from telebot import types
 button1 = types.KeyboardButton('Сегодня')
 button2 = types.KeyboardButton('Завтра')
