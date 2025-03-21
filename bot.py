@@ -1,5 +1,6 @@
 from cfg import token#импорт кода других папок и модулей
 import telebot,sqlite3
+from needdisp import daymnedan
 from sqlite3 import Error
 from sqlite import addnote,giveinf,deleteinf,getnumbers
 from buttons import button1, button2, button3,button4,button5,button6,button7,button8,button9

@@ -2,6 +2,7 @@ import telebot#тут у нас основное по sqlite,возможет г
 import sqlite3
 from datetime import datetime
 import pytz
+from needdisp import daymnedan
 from cfg import token
 bot = telebot.TeleBot(token)
 connection = sqlite3.connect('tasks.db',check_same_thread=False)#подключение к таблице
@@ -67,7 +68,7 @@ def giveinf(message):
         cursor.execute("SELECT * FROM TASKS WHERE id = "+str(message.text))#выбирает все
         a=cursor.fetchall()#выбирает все
         connection.commit()
-        bot.send_message(message.chat.id,str(a))#тот самый костыль
+        daymnedan(message)#тот самый костыль
 def deleteinf(message):
     try:
         connection = sqlite3.connect('tasks.db',check_same_thread=False)
