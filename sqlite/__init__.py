@@ -65,9 +65,6 @@ def giveinf(message):
     if b==0:
         bot.send_message(message.chat.id,'Нету записей в базе данных')
     else:
-        cursor.execute("SELECT * FROM TASKS WHERE id = "+str(message.text))#выбирает все
-        a=cursor.fetchall()#выбирает все
-        connection.commit()
         daymnedan(message)#тот самый костыль
 def deleteinf(message):
     try:
