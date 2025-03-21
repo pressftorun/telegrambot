@@ -1,7 +1,7 @@
 from cfg import token#импорт кода других папок и модулей
 import telebot,sqlite3
 from sqlite3 import Error
-from sqlite import addnote,giveinf
+from sqlite import addnote,giveinf,deleteinf,getnumbers
 from buttons import button1, button2, button3,button4,button5,button6,button7,button8,button9
 from telebot import types
 bot = telebot.TeleBot(token)#токен бота,ВАЖНО!
@@ -17,12 +17,18 @@ def helpfunc(message):
 
 @bot.message_handler(commands = ['checktasks'])
 def helpfunc(message):
-    giveinf(message)#тут у нас отсылка сообщений в файле sqlite, костыль
+    bot.send_message(message.chat.id, 'Введите номер задания из списка: '+str(getnumbers()))
+    bot.register_next_step_handler(message,giveinf)
+    
 
 @bot.message_handler(commands = ['addtask'])
 def helpfunc(message):
     bot.send_message(message.chat.id, 'Введите задание')
     bot.register_next_step_handler(message,addnote)#тут у нас отсылка сообщения в файле sqlite, потом ответ отттуда же(костыль)
+@bot.message_handler(commands = ['deltask'])
+def delfunc(message):
+    bot.send_message(message.chat.id, 'Введите номер задания для удаления')
+    bot.register_next_step_handler(message,deleteinf)
 #принимает сообщения на постоянке, если нет обращения к командам типа /...(СТАВИТЬ В САМЫЙ НИЗ)
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):
