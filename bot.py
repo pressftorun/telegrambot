@@ -26,10 +26,14 @@ def helpfunc(message):
 def helpfunc(message):
     bot.send_message(message.chat.id, 'Введите задание')
     bot.register_next_step_handler(message,addnote)#тут у нас отсылка сообщения в файле sqlite, потом ответ отттуда же(костыль)
+
+
 @bot.message_handler(commands = ['deltask'])
 def delfunc(message):
     bot.send_message(message.chat.id, 'Введите номер задания для удаления')
     bot.register_next_step_handler(message,deleteinf)
+
+    
 #принимает сообщения на постоянке, если нет обращения к командам типа /...(СТАВИТЬ В САМЫЙ НИЗ)
 @bot.message_handler(func=lambda message: True)
 def handle_message(message):

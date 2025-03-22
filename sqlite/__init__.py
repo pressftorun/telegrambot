@@ -65,7 +65,9 @@ def giveinf(message):
     if b==0:
         bot.send_message(message.chat.id,'Нету записей в базе данных')
     else:
-        daymnedan(message)#тот самый костыль
+        daymnedan(message)#тот самый 
+        
+
 def deleteinf(message):
     try:
         connection = sqlite3.connect('tasks.db',check_same_thread=False)
