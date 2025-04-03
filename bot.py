@@ -2,7 +2,7 @@ from cfg import token#импорт кода других папок и моду�
 import telebot,sqlite3
 from needdisp import daymnedan
 from sqlite3 import Error
-from sqlite import addnote,giveinf,deleteinf,getnumbers
+from sqlite import *
 from buttons import button1, button2, button3,button4,button5,button6,button7,button8,button9
 from telebot import types
 bot = telebot.TeleBot(token)#токен бота,ВАЖНО!
@@ -24,14 +24,29 @@ def helpfunc(message):
 
 @bot.message_handler(commands = ['addtask'])
 def helpfunc(message):
-    bot.send_message(message.chat.id, 'Введите задание')
-    bot.register_next_step_handler(message,addnote)#тут у нас отсылка сообщения в файле sqlite, потом ответ отттуда же(костыль)
+    if checkadmin(message)=='1':
+        bot.send_message(message.chat.id, 'Введите задание')
+        bot.register_next_step_handler(message,addnote)#тут у нас отсылка сообщения в файле sqlite, потом ответ отттуда же(костыль)
+    else:
+        bot.send_message(message.chat.id, 'Нет доступа')
+        
 
 
 @bot.message_handler(commands = ['deltask'])
 def delfunc(message):
-    bot.send_message(message.chat.id, 'Введите номер задания для удаления')
-    bot.register_next_step_handler(message,deleteinf)
+    if checkadmin(message)=='1':
+        bot.send_message(message.chat.id, 'Введите номер задания для удаления')
+        bot.register_next_step_handler(message,deleteinf)
+    else:
+        bot.send_message(message.chat.id, 'Нет доступа')
+
+@bot.message_handler(commands = ['addadmin'])
+def addadminbot(message):
+    addadmin(message)
+@bot.message_handler(commands = ['removeeveryadmin'])
+def reference(message):
+    removefromexistence(message)
+    
 
     
 #принимает сообщения на постоянке, если нет обращения к командам типа /...(СТАВИТЬ В САМЫЙ НИЗ)
@@ -41,8 +56,6 @@ def handle_message(message):
         bot.send_message(message.chat.id, 'Сегодня день Сегодня')
     elif message.text.lower()=='завтра':
         bot.send_message(message.chat.id, 'Завтра будет Завтра')
-    elif message.text.lower()=='вчера':
-        bot.send_message(message.chat.id, 'Вчера было Вчера')
     else:
         bot.reply_to(message, 'Чет не то ты написал...')
 

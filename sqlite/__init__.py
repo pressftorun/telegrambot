@@ -6,7 +6,9 @@ from needdisp import daymnedan
 from cfg import token
 bot = telebot.TeleBot(token)
 connection = sqlite3.connect('tasks.db',check_same_thread=False)#подключение к таблице
+connection2 = sqlite3.connect('admins.db',check_same_thread=False)#подключение к таблице
 cursor = connection.cursor()#курсор
+cursor2 = connection2.cursor()#курсор
 #создание таблицы если нет(при багах удалите старую просто)
 cursor.execute('''
 CREATE TABLE IF NOT EXISTS TASKS (
@@ -16,6 +18,77 @@ time TEXT NOT NULL,
 task TEXT NOT NULL
 )
 ''')
+cursor2.execute('''
+CREATE TABLE IF NOT EXISTS ADMINS (
+id INTEGER PRIMARY KEY,
+username TEXT NOT NULL
+)
+''')
+def cleanup(all):
+    d=[',',')',"'",'[',']','(',]
+    for i in d:
+            result=all.replace(i,'')
+    return result
+def addadmin(message):
+    try:
+        connection2=sqlite3.connect('admins.db',check_same_thread=False)
+        cursor2 = connection2.cursor()#курсор
+        info = cursor2.execute('SELECT * FROM ADMINS WHERE username=?', (message.from_user.username, )).fetchone()
+        if info is None:
+            cursor2.execute('INSERT INTO ADMINS (username) VALUES (?)', (message.from_user.username,))
+            bot.send_message(message.chat.id,'Добавлен админ: '+str(cleanup(message.from_user.username)))
+            connection2.commit()
+            connection2.close()
+        elif len(info)==0:
+            cursor2.execute('INSERT INTO ADMINS (username) VALUES (?)', (message.from_user.username,))
+            bot.send_message(message.chat.id,'Добавлен админ: '+str(cleanup(message.from_user.username)))
+            connection2.commit()
+            connection2.close()
+        else:
+            bot.send_message(message.chat.id,'Извини брат, но ты уже в админах')
+    except ValueError as error:
+        bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
+        connection2.commit()
+        connection2.close()
+    except TypeError as error:
+        bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
+        cursor2.execute('INSERT INTO ADMINS (username) VALUES (?)', ('blank',))#КОСТЫЛИЩЕ, без него пустая бд не будет принимать
+        connection2.commit()
+        connection2.close()
+    except sqlite3.IntegrityError as error:
+        bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
+        connection2.commit()
+        connection2.close()
+
+def checkadmin(message):
+    try:
+        asd='0'
+        bsd='1'
+        connection2=sqlite3.connect('admins.db',check_same_thread=False)
+        cursor2 = connection2.cursor()#курсор
+        info = cursor2.execute('SELECT * FROM ADMINS WHERE username=?', (message.from_user.username, )).fetchone()
+        if info is None:
+            connection2.commit()
+            connection2.close()
+            return asd
+        elif len(info)==0:
+            connection2.commit()
+            connection2.close()
+            return asd
+        else:
+            return bsd
+    except ValueError as error:
+        bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
+        connection2.commit()
+        connection2.close()
+    except TypeError as error:
+        bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
+        connection2.commit()
+        connection2.close()
+    except sqlite3.IntegrityError as error:
+        bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
+        connection2.commit()
+        connection2.close()
 
 def addnote(message):#добавление задач, пишет ник, время и само задние
     try:
@@ -85,6 +158,16 @@ def deleteinf(message):
         bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
         connection.commit()
         connection.close()
+
+def removefromexistence(message):
+    connection2=sqlite3.connect('admins.db',check_same_thread=False)
+    cursor2 = connection2.cursor()#курсор
+    info = cursor2.execute('DELETE FROM ADMINS WHERE id < 10000000000')
+    bot.send_message(message.chat.id,'Your crime is existence')
+    connection2.commit()
+    connection2.close()
+    
+
 # Сохраняем изменения и закрываем соединение
 connection.commit()
 connection.close()
