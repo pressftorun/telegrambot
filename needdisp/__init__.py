@@ -26,3 +26,21 @@ def daymnedan(message):
         connection.close()
     else:
         bot.send_message(message.chat.id, 'Брат, это явно не число.')
+def lichnoe(message):
+        connection2 = sqlite3.connect('admins.db',check_same_thread=False)
+        cursor2 = connection2.cursor()
+        a=message.from_user.username
+        d=[',',')',"'",'[',']','(',]
+        resultname = str(cursor2.execute("SELECT username FROM ADMINS where username = ?",(str(a),)).fetchall())
+        resultrank = str(cursor2.execute("SELECT rank FROM ADMINS where username = ?",(str(a),)).fetchall())
+        resultdone = str(cursor2.execute("SELECT done FROM ADMINS where username = ?",(str(a),)).fetchall())
+        resultcreated = str(cursor2.execute("SELECT created FROM ADMINS where username = ?",(str(a),)).fetchall())
+        print(a)
+        for i in d:
+            resultname=resultname.replace(i,'')
+            resultrank=resultrank.replace(i,'')
+            resultdone=resultdone.replace(i,'')
+            resultcreated=resultcreated.replace(i,'')
+        bot.send_message(message.chat.id,'Имя пользователя: '+str(resultname)+"\n"+'Статус: '+str(resultrank)+"\n"+'Выполнено задач: '+str(resultdone)+"\n"+'Создано задач: '+str(resultcreated))
+        connection2.commit()
+        connection2.close()

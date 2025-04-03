@@ -21,7 +21,11 @@ task TEXT NOT NULL
 cursor2.execute('''
 CREATE TABLE IF NOT EXISTS ADMINS (
 id INTEGER PRIMARY KEY,
-username TEXT NOT NULL
+username TEXT NOT NULL,
+name TEXT NOT NULL,
+rank TEXT,
+done INTEGER,
+created INTEGER
 )
 ''')
 def cleanup(all):
@@ -29,23 +33,50 @@ def cleanup(all):
     for i in d:
             result=all.replace(i,'')
     return result
+def adduser(message):
+    try:
+        connection2=sqlite3.connect('admins.db',check_same_thread=False)
+        cursor2 = connection2.cursor()
+        info = cursor2.execute('SELECT * FROM ADMINS WHERE username=?', (message.from_user.username, )).fetchone()
+        if info is None:
+            cursor2.execute('INSERT INTO ADMINS (username,name,rank) VALUES (?,?,?)', (message.from_user.username,message.text,'user',))
+            connection2.commit()
+            connection2.close()
+            bot.send_message(message.chat.id,'Успешно зарегестрирован.')
+        elif len(info)==0:
+            cursor2.execute('INSERT INTO ADMINS (username,name,rank) VALUES (?,?,?)', (message.from_user.username,message.text,'user',))
+            connection2.commit()
+            connection2.close()
+            bot.send_message(message.chat.id,'Успешно зарегестрирован.')
+        else:
+            bot.send_message(message.chat.id,'Вы уже являетесь пользователем.')
+    except ValueError as error:
+        bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
+        connection2.commit()
+        connection2.close()
+    except TypeError as error:
+        bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
+        connection2.commit()
+        connection2.close()
+    except sqlite3.IntegrityError as error:
+        bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
+        connection2.commit()
+        connection2.close()
 def addadmin(message):
     try:
         connection2=sqlite3.connect('admins.db',check_same_thread=False)
         cursor2 = connection2.cursor()#курсор
         info = cursor2.execute('SELECT * FROM ADMINS WHERE username=?', (message.from_user.username, )).fetchone()
         if info is None:
-            cursor2.execute('INSERT INTO ADMINS (username) VALUES (?)', (message.from_user.username,))
-            bot.send_message(message.chat.id,'Добавлен админ: '+str(cleanup(message.from_user.username)))
-            connection2.commit()
-            connection2.close()
+            bot.send_message(message.chat.id,'Вы не являетесь пользователем.')
         elif len(info)==0:
-            cursor2.execute('INSERT INTO ADMINS (username) VALUES (?)', (message.from_user.username,))
-            bot.send_message(message.chat.id,'Добавлен админ: '+str(cleanup(message.from_user.username)))
+            bot.send_message(message.chat.id,'Вы не являетесь пользователем.')
+        else:
+            dds=message.from_user.username
+            cursor2.execute('UPDATE ADMINS SET rank = "admin" WHERE username=?',(dds,))
+            bot.send_message(message.chat.id,'Роль пользователя '+str(cleanup(message.from_user.username))+' Обновлена на Администратора.')
             connection2.commit()
             connection2.close()
-        else:
-            bot.send_message(message.chat.id,'Извини брат, но ты уже в админах')
     except ValueError as error:
         bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
         connection2.commit()
@@ -66,7 +97,7 @@ def checkadmin(message):
         bsd='1'
         connection2=sqlite3.connect('admins.db',check_same_thread=False)
         cursor2 = connection2.cursor()#курсор
-        info = cursor2.execute('SELECT * FROM ADMINS WHERE username=?', (message.from_user.username, )).fetchone()
+        info = cursor2.execute('SELECT * FROM ADMINS WHERE rank="admin" AND username=? ', (message.from_user.username, )).fetchone()
         if info is None:
             connection2.commit()
             connection2.close()
@@ -163,7 +194,7 @@ def removefromexistence(message):
     connection2=sqlite3.connect('admins.db',check_same_thread=False)
     cursor2 = connection2.cursor()#курсор
     info = cursor2.execute('DELETE FROM ADMINS WHERE id < 10000000000')
-    bot.send_message(message.chat.id,'Your crime is existence')
+    bot.send_message(message.chat.id,'Все пользователи удалены.')
     connection2.commit()
     connection2.close()
     
