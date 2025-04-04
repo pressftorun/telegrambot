@@ -31,7 +31,7 @@ def helpfunc(message):
 @bot.message_handler(commands = ['addtask'])
 def helpfunc(message):
     if checkadmin(message)=='1':
-        bot.send_message(message.chat.id, 'Введите задание')
+        bot.send_message(message.chat.id, 'Введите задание и ответ на него через /')
         bot.register_next_step_handler(message,addnote)#тут у нас отсылка сообщения в файле sqlite, потом ответ отттуда же(костыль)
     else:
         bot.send_message(message.chat.id, 'Нет доступа')

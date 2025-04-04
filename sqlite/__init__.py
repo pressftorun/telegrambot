@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS TASKS (
 id INTEGER PRIMARY KEY,
 username TEXT NOT NULL,
 time TEXT NOT NULL,
-task TEXT NOT NULL
+task TEXT NOT NULL,
+anwser TEXT NOT NULL
 )
 ''')
 cursor2.execute('''
@@ -29,7 +30,7 @@ created INTEGER
 )
 ''')
 def cleanup(all):
-    d=[',',')',"'",'[',']','(',]
+    d=[',',')',"'",'[',']','(']
     for i in d:
             result=all.replace(i,'')
     return result
@@ -62,6 +63,9 @@ def adduser(message):
         bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
         connection2.commit()
         connection2.close()
+
+
+    
 def addadmin(message):
     try:
         connection2=sqlite3.connect('admins.db',check_same_thread=False)
@@ -90,6 +94,8 @@ def addadmin(message):
         bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
         connection2.commit()
         connection2.close()
+
+
 
 def checkadmin(message):
     try:
@@ -121,16 +127,45 @@ def checkadmin(message):
         connection2.commit()
         connection2.close()
 
+
 def addnote(message):#добавление задач, пишет ник, время и само задние
     try:
         connection = sqlite3.connect('tasks.db',check_same_thread=False)
         cursor = connection.cursor()
+        abb=message.text
+        ab=abb.split('/')
         date = datetime.now()#Пишет время, в функции так как вне ее пишет не настоящее на момент записи, а время запуска бота
-        cursor.execute('INSERT INTO TASKS (time,task,username) VALUES (?,?,?)', (date,message.text,message.from_user.username,))
+        cursor.execute('INSERT INTO TASKS (time,task,username,anwser) VALUES (?,?,?,?)', (date,ab[0],message.from_user.username,ab[1],))
         #добавление данных
         connection.commit()#сохранияем
         connection.close()
-        bot.send_message(message.chat.id, 'Добавлено задание:'+' '+message.text)#тот самый костыль
+        bot.send_message(message.chat.id, 'Добавлено задание:'+' '+str(ab[0]))#тот самый костыль
+        connection2=sqlite3.connect('admins.db',check_same_thread=False)
+        cursor2 = connection2.cursor()#курсор
+        acc=cursor2.execute('SELECT created FROM ADMINS WHERE username=?',(message.from_user.username,)).fetchone()
+        acc=cleanup(str(acc[0]))
+        acc=acc.replace(',','')
+        acc=acc.replace(')','')
+        if acc == 'None':
+            acc=1
+            print(acc)
+            dss=message.from_user.username
+            sql='UPDATE ADMINS SET created = ? WHERE username=?'
+            dql=(acc,dss,)
+            cursor2.execute(sql,dql)
+            connection2.commit()
+            connection2.close()
+        else:
+            acc=cleanup(acc)
+            acc=int(acc)+1
+            acc=str(acc)
+            print(acc)
+            dss=message.from_user.username
+            sql='UPDATE ADMINS SET created = ? WHERE username=?'
+            dql=(acc,dss,)
+            cursor2.execute(sql,dql)
+            connection2.commit()
+            connection2.close()
     except ValueError as error:
         bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
         connection.commit()
@@ -141,6 +176,10 @@ def addnote(message):#добавление задач, пишет ник, вре
         connection.close()
     except sqlite3.IntegrityError as error:
         bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
+        connection.commit()
+        connection.close()
+    except AttributeError as error:
+        bot.send_message(message.chat.id,'Ты такого не отправляй, полжалуйста.')
         connection.commit()
         connection.close()
 def getnumbers():
