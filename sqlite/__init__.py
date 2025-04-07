@@ -209,7 +209,25 @@ def giveinf(message):
         bot.send_message(message.chat.id,'Нету записей в базе данных')
     else:
         daymnedan(message)#тот самый 
-        
+
+
+def deleter(message):
+    try:
+        connection = sqlite3.connect('tasks.db',check_same_thread=False)
+        cursor = connection.cursor()
+        delid= int(message.text)
+        todelete='DELETE from TASKS where id = '+str(delid)
+        cursor.execute(todelete)
+        connection.commit()
+        bot.send_message(message.chat.id,'Удалена запись №: '+ str(delid))
+    except ValueError as error:
+        bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
+        connection.commit()
+        connection.close()
+    except TypeError as error:
+        bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error))
+        connection.commit()
+        connection.close()     
 
 def deleteinf(message):
     try:

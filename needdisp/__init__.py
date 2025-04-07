@@ -1,6 +1,12 @@
 import telebot,sqlite3
 from cfg import token
+ada=None
 bot = telebot.TeleBot(token)
+def cleanup(all):
+    d=[',',')',"'",'[',']','(']
+    for i in d:
+            result=all.replace(i,'')
+
 def daymnedan(message):
     if (message.text.isdigit()):
         connection = sqlite3.connect('tasks.db',check_same_thread=False)
@@ -26,6 +32,9 @@ def daymnedan(message):
         connection.close()
     else:
         bot.send_message(message.chat.id, 'Брат, это явно не число.')
+
+
+    
 def lichnoe(message):
         connection2 = sqlite3.connect('admins.db',check_same_thread=False)
         cursor2 = connection2.cursor()

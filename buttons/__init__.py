@@ -1,6 +1,6 @@
 import telebot#кнопки тут чтоб не захламлять основной файл
 from telebot import types
-button1 = types.KeyboardButton('blank')
+button1 = types.KeyboardButton('/dotask')
 button2 = types.KeyboardButton('/addadmin')
 button3 = types.KeyboardButton('/lk')
 button4 = types.KeyboardButton('blank')
