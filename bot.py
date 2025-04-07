@@ -4,19 +4,16 @@ from needdisp import *
 ada=None
 from sqlite3 import Error
 from sqlite import *
-from buttons import button1, button2, button3,button4,button5,button6,button7,button8,button9
+from buttons import *
 from telebot import types
 bot = telebot.TeleBot(token)#токен бота,ВАЖНО!
 @bot.message_handler(commands = ['start'])#команда старт(по коду, то что после собаки-условие, вызывающее функцию под ним)
 def handle_start(message):
     keyboard = types.ReplyKeyboardMarkup(row_width=3)#тип клавы, ширина
-    keyboard.add(button1, button2, button3,button4,button5,button6,button7,button8,button9)
+    keyboard.add(button1, button2, button3,button4,button5,button6)
     bot.reply_to(message, 'Приветствую вас, этот бот создан для обучения сотрудников в игровой форме с заданиями. Тут вы можете выполнять и просматиривать задания.', reply_markup=keyboard)#непосредственно добавляет клаву
     bot.send_message(message.chat.id, 'Введите ваше имя:')
     bot.register_next_step_handler(message,adduser)
-@bot.message_handler(commands = ['help'])
-def helpfunc(message):
-    bot.send_message(message.chat.id, 'Привет, напиши слово СЕГОДНЯ, ЗАВТРА или ВЧЕРА')
 
 @bot.message_handler(commands = ['lk'])
 def helpfunc(message):
@@ -53,7 +50,8 @@ def delfunc(message):
 
 @bot.message_handler(commands = ['addadmin'])
 def addadminbot(message):
-    addadmin(message)
+    bot.send_message(message.chat.id,'Введите пароль.')
+    bot.register_next_step_handler(message,checkpassword)
 @bot.message_handler(commands = ['removeusers'])
 def reference(message):
     removefromexistence(message)

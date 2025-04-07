@@ -1,5 +1,6 @@
 import telebot#тут у нас основное по sqlite,возможет говнокод
 import sqlite3
+from buttons import *
 from datetime import datetime
 import pytz
 from needdisp import daymnedan
@@ -78,7 +79,9 @@ def addadmin(message):
         else:
             dds=message.from_user.username
             cursor2.execute('UPDATE ADMINS SET rank = "admin" WHERE username=?',(dds,))
-            bot.send_message(message.chat.id,'Роль пользователя '+str(cleanup(message.from_user.username))+' Обновлена на Администратора.')
+            keyboard = types.ReplyKeyboardMarkup(row_width=3)#тип клавы, ширина
+            keyboard.add(admin1,admin2,admin3,admin4,admin5,admin6)
+            bot.reply_to(message,'Роль пользователя '+str(cleanup(message.from_user.username))+' Обновлена на Администратора.',reply_markup=keyboard)
             connection2.commit()
             connection2.close()
     except ValueError as error:
@@ -127,6 +130,13 @@ def checkadmin(message):
         connection2.commit()
         connection2.close()
 
+def checkpassword(message):
+    if message.text=='1978':
+        addadmin(message)
+    else:
+        img = open('bin/notpass.gif', 'rb')
+        bot.send_document(message.chat.id, img, None, '')
+        img.close()
 
 def addnote(message):#добавление задач, пишет ник, время и само задние
     try:
