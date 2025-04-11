@@ -54,7 +54,11 @@ def addadminbot(message):
     bot.register_next_step_handler(message,checkpassword)
 @bot.message_handler(commands = ['removeusers'])
 def reference(message):
-    removefromexistence(message)
+    if checkadmin(message)=='1':
+        removefromexistence(message)
+    else:
+        bot.send_message(message.chat.id, 'Нет доступа')
+
 
 
 def dotaska(message):
