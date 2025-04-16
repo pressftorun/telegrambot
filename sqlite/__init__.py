@@ -192,6 +192,10 @@ def addnote(message):#добавление задач, пишет ник, вре
         bot.send_message(message.chat.id,'Ты такого не отправляй, полжалуйста.')
         connection.commit()
         connection.close()
+    except IndexError as error:
+        bot.send_message(message.chat.id,'Ошибка при работе:  '+str(error)+'. Вы забыли дефис!')
+        connection.commit()
+        connection.close()
 def getnumbers():
     connection = sqlite3.connect('tasks.db',check_same_thread=False)
     cursor = connection.cursor()
